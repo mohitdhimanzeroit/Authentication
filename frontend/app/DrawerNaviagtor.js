@@ -48,12 +48,13 @@ const CustomDrawer = props => {
           right: 0,
           left: 0,
           bottom: 50,
-          backgroundColor: '#f6f6f6',
+          color:'black',
+          backgroundColor: 'black',
           padding: 20,
         }}
         onPress={() => setIsLoggedIn(false)}
       >
-        <Text>Log Out</Text>
+        <Text >Log Out</Text>
       </TouchableOpacity>
     </View>
   );

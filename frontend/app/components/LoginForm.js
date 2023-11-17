@@ -1,29 +1,27 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, TextInput } from 'react-native';
+import { View, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
 import client from '../api/client';
 import { useLogin } from '../context/LoginProvider';
 import { isValidEmail, isValidObjField, updateError } from '../utils/methods';
 import FormContainer from './FormContainer';
 import FormInput from './FormInput';
 import FormSubmitButton from './FormSubmitButton';
+import  navigation from '@react-navigation/native'
 import { StackActions } from '@react-navigation/native';
 import Home from './Home';
 
-const LoginForm = (navigation) => {
+const LoginForm = ({navigation}) => {
 
   const { setIsLoggedIn, setProfile } = useLogin();
   const [userInfo, setUserInfo] = useState({
-    phone: '',
+    email: '',
     password: '',
-    countryCode: '',
-    deviceToken: '',
-    devicePlatform: '',
-    deviceId: '',
+    
   });
 
   const [error, setError] = useState('');
 
-  const { phone, password, countryCode, deviceId, devicePlatform, deviceToken } = userInfo;
+  const { email, password, } = userInfo;
 
   const handleOnChangeText = (value, fieldName) => {
     setUserInfo({ ...userInfo, [fieldName]: value });
@@ -41,23 +39,25 @@ const LoginForm = (navigation) => {
     return true;
     
   };
-  const moveTo = (screen, payload) =>{
-    navigation.navigate(screen, { ...payload })
-   }
+  
   const submitForm = async () => {
     if (isValidForm()) {
       try {
         
-        const res = await client.post('http://54.147.129.86/auth/login', { ...userInfo });
+        const res = await client.post('http://192.168.0.111:8001/sign-in', { ...userInfo });
 
         if (res.data.success) {
-          setUserInfo({ phone: '', password: '', countryCode: '', deviceId: '', devicePlatform: '', deviceToken: '' });
+          setUserInfo({ email: '', password: '' });
           
           setProfile(res.data.user);
         
         
           setIsLoggedIn(true);
-           moveTo('Home');
+          navigation.dispatch(
+            StackActions.replace('', {
+              token: res.data.token,
+            }))
+          
        }
 
         console.log(res.data,"kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
@@ -77,10 +77,10 @@ const LoginForm = (navigation) => {
         </Text>
       ) : null}
       <FormInput
-        value={phone}
-        onChangeText={value => handleOnChangeText(value, 'phone')}
-        label='Phone'
-        placeholder='Enter a Phone Number'
+        value={email}
+        onChangeText={value => handleOnChangeText(value, 'email')}
+        label='Email'
+        placeholder='Enter a email'
         autoCapitalize='none'
       />
       <FormInput
@@ -91,40 +91,20 @@ const LoginForm = (navigation) => {
         autoCapitalize='none'
         secureTextEntry
       />
-      <FormInput
-        value={devicePlatform}
-        onChangeText={value => handleOnChangeText(value, 'devicePlatform')}
-        label='DevicePlatform'
-        placeholder=''
-        autoCapitalize='none'
-
-      />
-      <FormInput
-        value={deviceToken}
-        onChangeText={value => handleOnChangeText(value, 'deviceToken')}
-        label='Device Token'
-        placeholder=''
-        autoCapitalize='none'
+      <TouchableOpacity style={styles.button}onPress={() => navigation.navigate('ForgetPassword')}>
+            <Text  style={{ color:'blue'}}>ForgetPassword?</Text>
+          </TouchableOpacity>
+      <FormSubmitButton onPress={ () => {submitForm(email, password)
       
-      />
-      <FormInput
-        value={deviceId}
-        onChangeText={value => handleOnChangeText(value, 'deviceId')}
-        label='DeviceId'
-        placeholder=''
-        autoCapitalize='none'
-
-      />
-      <FormInput
-        value={countryCode}
-        onChangeText={value => handleOnChangeText(value, 'countryCode')}
-        label='CountryCode'
-        placeholder=''
-        autoCapitalize='none'
-
-      />
-      <FormSubmitButton onPress={submitForm} title='Login' />
+      }} title='Login' />
+      <View style={{flexDirection: 'row', marginTop: 20}}>
+          <Text style= {{color: 'black'}}>Already have an account? </Text>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('SignupForm')}>
+            <Text style={{ color: 'blue'}}>SignupForm</Text>
+          </TouchableOpacity>
+        </View>
     </FormContainer>
+    
   );
 };
 

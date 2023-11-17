@@ -72,18 +72,18 @@ const SignupForm = ({ navigation }) => {
   };
 
   const signUp = async (values, formikActions) => {
-    const res = await axios.post('http://localhost:8000/create-user', {
+    const res = await axios.post('http://192.168.0.111:8001/create-user', {
       ...values,
     });
 
     if (res.data.success) {
-      const signInRes = await axios.post('http://localhost:8000/sign-in', {
+      const signInRes = await axios.post('http://192.168.0.111:8001/sign-in', {
         email: values.email,
         password: values.password,
       });
       if (signInRes.data.success) {
         navigation.dispatch(
-          StackActions.replace('ImageUpload', {
+          StackActions.replace('', {
             token: signInRes.data.token,
           })
         );
