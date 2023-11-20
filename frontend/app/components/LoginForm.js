@@ -44,7 +44,7 @@ const LoginForm = ({navigation}) => {
     if (isValidForm()) {
       try {
         
-        const res = await client.post('http://192.168.0.111:8001/sign-in', { ...userInfo });
+        const res = await client.post('http://192.168.0.111:8002/sign-in', { ...userInfo });
 
         if (res.data.success) {
           setUserInfo({ email: '', password: '' });
