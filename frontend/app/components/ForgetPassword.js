@@ -8,6 +8,7 @@ import {
   StyleSheet,
   TextInput,
   KeyboardAvoidingView,
+  Alert
 } from 'react-native';
 import Fonts from '../common/assets/fonts';
 import SvgIcon from '../common/assets/images/SvgIcon';
@@ -15,13 +16,13 @@ import client from '../api/client';
 import { isValidEmail, isValidObjField, updateError } from '../utils/methods';
 import FormSubmitButton from './FormSubmitButton';
 import FormInput from './FormInput';
-const  ForgotPasswordScreen = (navigation) => {
+const  ForgotPasswordScreen = ({navigation}) => {
   const [userInfo, setUserInfo] = useState({
     email: '',
     
     
   });
-
+console.log(userInfo, "tttttttt")
   const [error, setError] = useState('');
 
   const { email } = userInfo;
@@ -32,7 +33,7 @@ const  ForgotPasswordScreen = (navigation) => {
  
   const isValidForm = () => {
     if (!isValidObjField(userInfo))
-      return updateError('Required all fields!', setError);
+      return updateError('Required fields!', setError);
 
     
 
@@ -41,18 +42,19 @@ const  ForgotPasswordScreen = (navigation) => {
     return true;
     
   };
-  
+  console.log(!isValidObjField,"aaaaaaa")
   const submitForm = async () => {
     if (isValidForm()) {
       try {
         
-        const res = await client.post('http://192.168.0.111:8002/forget-password', { ...userInfo });
-
-        if (res.data.success) {
+        const res = await client.post('http://192.168.0.111:8000/forget-password', { ...userInfo });
+          console.log(res.status, "oooooooooooooo")
+        if (res.status == 200) {
+       
           setUserInfo({ email: ''});
-          
-          Alert.alert("All Done!", "You have successfully .", [{text: "OK", onPress: () => {navigation.navigate('EnterOtp')}}])
-         
+          console.log(res.status,"lllllllllllll");
+          Alert.alert("All Done!", "You have Sent Token to your Email Successfully .", [{text: "OK", onPress: () => {navigation.navigate('EnterOtp',  { email: email })}}])
+           console.log(email,"mmmmmmmmmmmmmmmm");
           
        }
 

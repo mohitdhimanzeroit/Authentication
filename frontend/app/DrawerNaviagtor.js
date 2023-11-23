@@ -28,7 +28,7 @@ const CustomDrawer = props => {
           }}
         >
           <View>
-            <Text>{profile.fullname}</Text>
+            <Text>{profile.firstName}</Text>
             <Text>{profile.email}</Text>
           </View>
           <Image
