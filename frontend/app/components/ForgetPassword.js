@@ -47,7 +47,7 @@ console.log(userInfo, "tttttttt")
     if (isValidForm()) {
       try {
         
-        const res = await client.post('http://192.168.0.111:8000/forget-password', { ...userInfo });
+        const res = await client.post('http://192.168.0.111:8002/forget-password', { ...userInfo });
           console.log(res.status, "oooooooooooooo")
         if (res.status == 200) {
        

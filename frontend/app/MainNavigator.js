@@ -25,6 +25,7 @@ const StackNavigator = () => {
       <Stack.Screen component={ForgetPassword} name='ForgetPassword' />
       <Stack.Screen component={ResetPassword} name='ResetPassword' />
       <Stack.Screen component={EnterOtp} name='EnterOtp' />
+      <Stack.Screen component={DrawerNavigator} name='DrawerNavigator' />
     </Stack.Navigator>
   );
 };

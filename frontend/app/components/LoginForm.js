@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text,Alert, TextInput, TouchableOpacity } from 'react-native';
 import client from '../api/client';
 import { useLogin } from '../context/LoginProvider';
 import { isValidEmail, isValidObjField, updateError } from '../utils/methods';
@@ -8,10 +8,11 @@ import FormInput from './FormInput';
 import FormSubmitButton from './FormSubmitButton';
 import  navigation from '@react-navigation/native'
 import { StackActions } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import Home from './Home';
 
 const LoginForm = ({navigation}) => {
-
+  const [getValue, setGetValue] = useState('');
   const { setIsLoggedIn, setProfile } = useLogin();
   const [userInfo, setUserInfo] = useState({
     email: '',
@@ -44,31 +45,32 @@ const LoginForm = ({navigation}) => {
     if (isValidForm()) {
       try {
         
-        const res = await client.post('http://192.168.0.111:8000/sign-in', { ...userInfo });
-
-        if (res.data.success) {
-          setUserInfo({ email: '', password: '' });
+        const res = await client.post('http://16.171.194.117/auth/login-with-email-dummy', { ...userInfo });
+        console.log(res.status, "oooooooooooooo")
+        if (res.status == 200) {
+          setUserInfo({  email: '', password: '' });
           
-          setProfile(res.data.user);
+          
+         
+          AsyncStorage.setItem('key', res.data['payload']["token"]
+          );
+          Alert.alert("All Done!", "Your Login Successfully .", [{text: "OK", onPress: () => {navigation.navigate('DrawerNavigator')}}])     
+          
         
-        
-          setIsLoggedIn(true);
-          navigation.dispatch(
-            StackActions.replace('', {
-              token: res.data.token,
-            }))
           
        }
 
-        console.log(res.data,"kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
+        console.log(res.data['payload'],"kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
         
-        
+     
+    //     const data = await AsyncStorage.getItem('key');
+    //  console.log(data,"yyyyyyyyyyy")
       } catch (error) {
         console.log(error);
       }
     }
   };
-
+  
   return (
     <FormContainer>
       {error ? (
@@ -102,12 +104,21 @@ const LoginForm = ({navigation}) => {
           <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('SignupForm')}>
             <Text style={{ color: 'blue'}}>SignupForm</Text>
           </TouchableOpacity>
+          <Text style={styles.textStyle}>
+          {getValue}
+        </Text>
         </View>
     </FormContainer>
     
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  textStyle: {
+    padding: 10,
+    textAlign: 'center',
+    color: 'black',
+  },
+});
 
-export default LoginForm;
+export default LoginForm ;

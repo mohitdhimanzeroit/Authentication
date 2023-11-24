@@ -48,7 +48,7 @@ const  EnterOtpScreen = ({ route, navigation }) => {
   
       try {
       
-        const res = await client.post('http://192.168.0.111:8000/verify-token', { ...userInfo });
+        const res = await client.post('http://192.168.0.111:8002/verify-token', { ...userInfo });
           console.log(res.status, "nnnnnnnnnnnnnnnnnn")
         if (res.status == 200) {
        
