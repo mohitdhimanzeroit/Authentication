@@ -1,7 +1,7 @@
 import React,{useState, useEffect} from 'react';
-import { Text, View, StyleSheet,FlatList } from 'react-native';
+import { Text, View, StyleSheet,FlatList ,Image} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Image } from 'react-native-svg';
+// import { Image } from 'react-native-svg';
 const Home =  ()  => {
   const getItem = async () => {
   const data = await AsyncStorage.getItem('key');
@@ -17,11 +17,12 @@ const Home =  ()  => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('https://api.escuelajs.co/api/v1/products');
+      const response = await fetch('https://fakestoreapi.com/products');
 
       if (response.ok) {
         const result = await response.json();
         setData(result);
+        console.log(result,"mmmmmmmmmmmmmm")
       } else {
         console.error('Failed to fetch data');
       }
@@ -40,7 +41,7 @@ const Home =  ()  => {
         <View>
 
           {/* Display the fetched data using FlatList */}
-          <FlatList
+          <FlatList 
             data={data}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
@@ -48,7 +49,7 @@ const Home =  ()  => {
                 <Text style={styles.title}>{item.title}</Text>
                 <Text>Price $ {item.price}</Text>
                 <Text>{item.description}</Text>
-                <Image  style={styles.tinyLogo} source={{ uri: item.images }} />
+                <Image  style={styles.tinyLogo} source={{ uri: item.image }} />
                 {/* Add more components to display other properties as needed */}
               </View> 
             )}
@@ -75,8 +76,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   tinyLogo: {
-    width: 50,
-    height: 50,
+    width: 100,
+    height: 100,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
 

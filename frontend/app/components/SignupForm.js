@@ -14,7 +14,7 @@ import axios from 'axios';
 import client from '../api/client';
 <script src="https://npmcdn.com/axios/dist/axios.min.js"></script>
 const validationSchema = Yup.object({
-  fullname: Yup.string()
+  firstName: Yup.string()
     .trim()
     .min(3, 'Invalid name!')
     .required('Name is required!'),
@@ -31,15 +31,15 @@ const validationSchema = Yup.object({
 
 const SignupForm = ({ navigation }) => {
   const userInfo = {
-    fullname: '',
-    phone: '',
+    firstName: '',
+    email: '',
     password: '',
     confirmPassword: '',
   };
 
   const [error, setError] = useState('');
 
-  const { fullname, email, password, confirmPassword } = userInfo;
+  const { firstName, email, password, confirmPassword } = userInfo;
 
   const handleOnChangeText = (value, fieldName) => {
     setUserInfo({ ...userInfo, [fieldName]: value });
@@ -50,7 +50,7 @@ const SignupForm = ({ navigation }) => {
     if (!isValidObjField(userInfo))
       return updateError('Required all fields!', setError);
     // if valid name with 3 or more characters
-    if (!fullname.trim() || fullname.length < 3)
+    if (!firstName.trim() || firstName.length < 3)
       return updateError('Invalid name!', setError);
     // only valid email id is allowed
     if (!isValidEmail(email)) return updateError('Invalid email!', setError);
@@ -72,18 +72,18 @@ const SignupForm = ({ navigation }) => {
   };
 
   const signUp = async (values, formikActions) => {
-    const res = await axios.post('http://192.168.0.111:8002/create-user', {
+    const res = await axios.post('http://16.171.194.117/auth/register-email-dummy', {
       ...values,
     });
 
     if (res.data.success) {
-      const signInRes = await axios.post('http://192.168.0.111:8002/sign-in', {
+      const signInRes = await axios.post('http://16.171.194.117/auth/login-with-email-dummy', {
         email: values.email,
         password: values.password,
       });
       if (signInRes.data.success) {
         navigation.dispatch(
-          StackActions.replace('', {
+          StackActions.replace('ImageUpload', {
             token: signInRes.data.token,
           })
         );
@@ -110,14 +110,14 @@ const SignupForm = ({ navigation }) => {
           handleBlur,
           handleSubmit,
         }) => {
-          const { fullname, email, password, confirmPassword } = values;
+          const { firstName, email, password, confirmPassword } = values;
           return (
             <>
               <FormInput
-                value={fullname}
+                value={firstName}
                 error={touched.fullname && errors.fullname}
-                onChangeText={handleChange('fullname')}
-                onBlur={handleBlur('fullname')}
+                onChangeText={handleChange('firstName')}
+                onBlur={handleBlur('firstName')}
                 label='Full Name'
                 placeholder='John Smith'
               />

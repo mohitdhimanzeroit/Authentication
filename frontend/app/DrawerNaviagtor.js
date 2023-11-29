@@ -28,9 +28,17 @@ const CustomDrawer = props => {
           }}
         >
           <View>
-            
+            <Text style={{ color: 'black'}}>{profile.firstName}</Text>
+            <Text>{profile.email}</Text>
           </View>
-          
+          <Image
+            source={{
+              uri:
+                profile.avatar ||
+                'https://images.unsplash.com/photo-1611426663925-b6ceddb3a4d6?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8dGliZXRhbiUyMHByYXllciUyMGZsYWdzfGVufDB8fDB8fHww',
+            }}
+            style={{ width: 60, height: 60, borderRadius: 30 }}
+          />
         </View>
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
@@ -46,7 +54,7 @@ const CustomDrawer = props => {
         }}
         onPress={() => setIsLoggedIn(false)}
       >
-        <Text >Log Out</Text>
+        <Text>Log Out</Text>
       </TouchableOpacity>
     </View>
   );
