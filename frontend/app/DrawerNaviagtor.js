@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, Image ,StyleSheet } from 'react-native';
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -9,37 +9,37 @@ import {
 import Home from './components/Home';
 import Tasks from './components/Tasks';
 import { useLogin } from './context/LoginProvider';
-
+import Colors from '../constants/Colors'
+import imgPlaceHolder from '../assets/user_boy.png'
+import Icon from 'react-native-vector-icons/FontAwesome'
+import ImagePicker, { openPicker } from 'react-native-image-crop-picker';
 const Drawer = createDrawerNavigator();
 
 const CustomDrawer = props => {
-  const { setIsLoggedIn, profile } = useLogin();
+  const { setIsLoggedIn } = useLogin();
+  const [profile, setProfile] = useState(null)
+  const imagePick = () => {
+    ImagePicker.openPicker({
+        width: 400,
+        height: 400,
+        cropping: true
+    }).then(image => {
+        console.log(image);
+        setProfile(image.path)
+    });
+}
   return (
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: 20,
-            backgroundColor: '#f6f6f6',
-            marginBottom: 20,
-          }}
-        >
-          <View>
-            <Text style={{ color: 'black'}}>{profile.firstName}</Text>
-            <Text>{profile.email}</Text>
-          </View>
-          <Image
-            source={{
-              uri:
-                profile.avatar ||
-                'https://images.unsplash.com/photo-1611426663925-b6ceddb3a4d6?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8dGliZXRhbiUyMHByYXllciUyMGZsYWdzfGVufDB8fDB8fHww',
-            }}
-            style={{ width: 60, height: 60, borderRadius: 30 }}
-          />
-        </View>
+        <View style={styles.profileContainer}>
+                <View style={styles.imgContainer}>
+                    <Image style={styles.image} source={profile ? { uri: profile } : imgPlaceHolder} />
+                    <TouchableOpacity onPress={imagePick}
+                        style={{ alignItems: 'flex-end', top: -20 }}>
+                        <Icon name="pencil" size={20} color={Colors.green} />
+                    </TouchableOpacity>
+                </View>
+                </View>
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
       <TouchableOpacity
@@ -48,7 +48,7 @@ const CustomDrawer = props => {
           right: 0,
           left: 0,
           bottom: 50,
-          color:'black',
+          color: 'black',
           backgroundColor: 'black',
           padding: 20,
         }}
@@ -79,5 +79,33 @@ const DrawerNavigator = () => {
     </Drawer.Navigator>
   );
 };
-
+const styles = StyleSheet.create({
+  container: {
+      flex: 1,
+  },
+  profileContainer: {
+      flex: 0.8,
+      justifyContent: 'center',
+      alignItems: 'center'
+  },
+  imgContainer: {},
+  textContainer: {
+      alignItems: 'center',
+  },
+  image: {
+      width: 110,
+      height: 110,
+      borderRadius: 55,
+      borderColor:Colors.black,
+      borderWidth: 3,
+  },
+  userInfo: {
+      flex: 1,
+  },
+  bio: {
+      borderRadius: 10,
+      padding: 16,
+      margin: 16
+  }
+})
 export default DrawerNavigator;
