@@ -80,7 +80,8 @@ const styles = StyleSheet.create({
     height: 100,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
-
+    borderBottomRightRadius: 16,
+    borderBottomLeftRadius: 16,
   },
 });
 
