@@ -11,7 +11,7 @@ import Tasks from './components/Tasks';
 import { useLogin } from './context/LoginProvider';
 import Colors from '../constants/Colors'
 import imgPlaceHolder from '../assets/user_boy.png'
-import Icon from 'react-native-vector-icons/FontAwesome'
+import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import ImagePicker, { openPicker } from 'react-native-image-crop-picker';
 const Drawer = createDrawerNavigator();
 
@@ -28,6 +28,35 @@ const CustomDrawer = props => {
         setProfile(image.path)
     });
 }
+
+const uploadImage = async () => {
+  // Check if any file is selected or not
+  if (singleFile != null) {
+    // If file selected then create FormData
+    const fileToUpload = singleFile;
+    const data = new FormData();
+    data.append('name', 'Image Upload');
+    data.append('file_attachment', fileToUpload);
+    // Please change file upload URL
+    let res = await fetch(
+      'http://16.171.194.117/private/edit-photo',
+      {
+        method: 'post',
+        body: data,
+        headers: {
+          'Content-Type': 'multipart/form-data; ',
+        },
+      }
+    );
+    let responseJson = await res.json();
+    if (responseJson.status == 1) {
+      alert('Upload Successful');
+    }
+  } else {
+    // If no file selected the show alert
+    alert('Please Select File first');
+  }
+};
   return (
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
@@ -36,7 +65,7 @@ const CustomDrawer = props => {
                     <Image style={styles.image} source={profile ? { uri: profile } : imgPlaceHolder} />
                     <TouchableOpacity onPress={imagePick}
                         style={{ alignItems: 'flex-end', top: -20 }}>
-                        <Icon name="pencil" size={20} color={Colors.green} />
+                        <FontAwesome name="pencil" size={20} color={Colors.green} />
                     </TouchableOpacity>
                 </View>
                 </View>

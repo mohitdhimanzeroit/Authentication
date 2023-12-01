@@ -49,7 +49,7 @@ const Home =  ()  => {
                 <Text style={styles.title}>{item.title}</Text>
                 <Text>Price $ {item.price}</Text>
                 <Text>{item.description}</Text>
-                <Image  style={styles.tinyLogo} source={{ uri: item.image }} />
+                <Image style={styles.tinyLogo} source={{ uri: item.image }} />
                 {/* Add more components to display other properties as needed */}
               </View> 
             )}
