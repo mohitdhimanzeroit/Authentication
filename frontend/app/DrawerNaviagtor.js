@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image ,StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Image ,StyleSheet, Button } from 'react-native';
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -30,31 +30,31 @@ const CustomDrawer = props => {
 }
 
 const uploadImage = async () => {
-  // Check if any file is selected or not
-  if (singleFile != null) {
-    // If file selected then create FormData
-    const fileToUpload = singleFile;
-    const data = new FormData();
-    data.append('name', 'Image Upload');
-    data.append('file_attachment', fileToUpload);
-    // Please change file upload URL
-    let res = await fetch(
-      'http://16.171.194.117/private/edit-photo',
-      {
-        method: 'post',
-        body: data,
-        headers: {
-          'Content-Type': 'multipart/form-data; ',
-        },
-      }
-    );
-    let responseJson = await res.json();
-    if (responseJson.status == 1) {
-      alert('Upload Successful');
+  try {
+    if (!profile) {
+      console.log('Please select an image first.');
+      return;
     }
-  } else {
-    // If no file selected the show alert
-    alert('Please Select File first');
+
+    const formData = new FormData();
+    formData.append('image', {
+      uri: profile.uri,
+      type: profile.type,
+      name: profile.fileName,
+    });
+
+    const response = await fetch('http://16.171.194.117/private/edit-photo', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    const responseData = await response.json();
+    console.log('Image uploaded successfully:', responseData);
+  } catch (error) {
+    console.error('Error uploading image:', error);
   }
 };
   return (
@@ -66,7 +66,9 @@ const uploadImage = async () => {
                     <TouchableOpacity onPress={imagePick}
                         style={{ alignItems: 'flex-end', top: -20 }}>
                         <FontAwesome name="pencil" size={20} color={Colors.green} />
+                    
                     </TouchableOpacity>
+                    <Button title="Upload Image" onPress={uploadImage} />
                 </View>
                 </View>
         <DrawerItemList {...props} />
