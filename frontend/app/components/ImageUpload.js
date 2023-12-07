@@ -10,24 +10,24 @@ const ImageUpload = props => {
   const [progress, setProgress] = useState(0);
   const { token } = props.route.params;
 
-//   const openImageLibrary = async () => {
-//     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  const openImageLibrary = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-//     if (status !== 'granted') {
-//       alert('Sorry, we need camera roll permissions to make this work!');
-//     }
+    if (status !== 'granted') {
+      alert('Sorry, we need camera roll permissions to make this work!');
+    }
 
-//     if (status === 'granted') {
-//       const response = await ImagePicker.launchImageLibraryAsync({
-//         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-//         allowsEditing: true,
-//       });
+    if (status === 'granted') {
+      const response = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+      });
 
-//       if (!response.cancelled) {
-//         setProfileImage(response.uri);
-//       }
-//     }
-//   };
+      if (!response.cancelled) {
+        setProfileImage(response.uri);
+      }
+    }
+  };
 
   const uploadProfileImage = async () => {
     const formData = new FormData();
@@ -44,11 +44,10 @@ const ImageUpload = props => {
           'Content-Type': 'multipart/form-data',
           authorization: `JWT ${token}`,
         },
+        onUploadProgress: ({ loaded, total }) => setProgress(loaded / total),
       });
 
-      if (res.data.success) {
-        props.navigation.dispatch(StackActions.replace('UserProfile'));
-      }
+     console.log(res.data);
     } catch (error) {
       console.log(error.message);
     }
@@ -70,6 +69,7 @@ const ImageUpload = props => {
             <Text style={styles.uploadBtn}>Upload Profile Image</Text>
           )}
         </TouchableOpacity>
+        {progress ? <Text>{progress}</Text>: null}
         <Text style={styles.skip}>Skip</Text>
         {profileImage ? (
           <Text
