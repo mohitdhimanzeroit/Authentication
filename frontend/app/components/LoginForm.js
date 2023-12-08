@@ -10,66 +10,126 @@ import  navigation from '@react-navigation/native'
 import { StackActions } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Home from './Home';
+import axios from 'axios';
+const LoginScreen = ({navigation}) => {
+     const [getValue, setGetValue] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+     const [error, setError] = useState('');
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('http://16.171.194.117/auth/login-with-phone-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phone,
+          password,
+          deviceToken: 'fioeirotu90945',
+          devicePlatform: 'Android',
+          deviceId: '24234234',
+          countryCode: '+91',
+        }),
+      });
 
-const LoginForm = ({navigation}) => {
-  const [getValue, setGetValue] = useState('');
-  const { setIsLoggedIn, setProfile } = useLogin();
-  const [userInfo, setUserInfo] = useState({
-    email: '',
-    password: '',
-    
-  });
+      const data = await response.json();
+      console.log(data,"jjjjjjjjjj")
+      console.log(response.status, "oooooooooooooo")
+      if (response.status == 200) {
+        // Login successful, handle authentication logic (e.g., store token)
+           
+        AsyncStorage.setItem('key', data['payload']["token"]
+         );
+         Alert.alert("All Done!", "Your Login Successfully .", [{text: "OK", onPress: () => {navigation.navigate('DrawerNavigator')}}])
+         console.log(data['payload'],"kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
+         console.log( response,'Login successful');
 
-  const [error, setError] = useState('');
+      } else {
+        // Login failed, display an error message
+        Alert.alert('Login Failed', data.message || 'Something went wrong');
+      }
 
-  const { email, password, } = userInfo;
 
-  const handleOnChangeText = (value, fieldName) => {
-    setUserInfo({ ...userInfo, [fieldName]: value });
+    } catch (error) {
+      console.error('Error during login:', error);
+      Alert.alert('Error', 'An error occurred during login');
+    }
   };
+
+// const LoginForm = ({navigation}) => {
+//   const [getValue, setGetValue] = useState('');
+//   const { setIsLoggedIn, setProfile } = useLogin();
+//   const [userInfo, setUserInfo] = useState({
+//     phone: '',
+//     password: '',
+    
+//   });
+
+//   const [error, setError] = useState('');
+
+//   const { phone, password, } = userInfo;
+
+//   const handleOnChangeText = (value, fieldName) => {
+//     setUserInfo({ ...userInfo, [fieldName]: value });
+//   };
  
-  const isValidForm = () => {
-    if (!isValidObjField(userInfo))
-      return updateError('Required all fields!', setError);
+//   const isValidForm = () => {
+//     if (!isValidObjField(userInfo))
+//       return updateError('Required all fields!', setError);
 
     
 
-    if (!password.trim() || password.length < 8)
-      return updateError('Password is too short!', setError);
+//     if (!password.trim() || password.length < 5)
+//       return updateError('Password is too short!', setError);
 
-    return true;
+//     return true;
     
-  };
+//   };
   
-  const submitForm = async () => {
-    if (isValidForm()) {
-      try {
+//   const submitForm = async () => {
+//     if (isValidForm()) {
+//       try {
         
-        const res = await client.post('http://16.171.194.117/auth/login-with-email-dummy', { ...userInfo });
-        console.log(res.status, "oooooooooooooo")
-        if (res.status == 200) {
-          setUserInfo({  email: '', password: '' });
+//         const res = await axios.post('http://16.171.194.117/auth/login-with-phone-email', { ...userInfo } ,{
+         
+//           headers: {
+//             'Content-Type': 'application/json',
+//           },
+//           body: JSON.stringify({
+//             phone,
+//             password,
+//             deviceToken: 'fioeirotu90945',
+//             devicePlatform: 'Android',
+//             deviceId: '24234234',
+//             countryCode: '+91',
+//           }),
+//         }) ;
+//         console.log(res,"pppppppppppppppp")
+//         console.log(res.status, "oooooooooooooo")
+//         if (res.status == 200) {
+//           setUserInfo({  phone: '', password: '' });
           
           
          
-          AsyncStorage.setItem('key', res.data['payload']["token"]
-          );
-          Alert.alert("All Done!", "Your Login Successfully .", [{text: "OK", onPress: () => {navigation.navigate('DrawerNavigator')}}])     
+//           AsyncStorage.setItem('key', res.data['payload']["token"]
+//           );
+//           Alert.alert("All Done!", "Your Login Successfully .", [{text: "OK", onPress: () => {navigation.navigate('DrawerNavigator')}}])     
           
         
           
-       }
+//        }
 
-        console.log(res.data['payload'],"kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
+//         console.log(res.data['payload'],"kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
         
      
-    //     const data = await AsyncStorage.getItem('key');
-    //  console.log(data,"yyyyyyyyyyy")
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
+//     //     const data = await AsyncStorage.getItem('key');
+//     //  console.log(data,"yyyyyyyyyyy")
+//       } catch (error) {
+//         console.log(error);
+//       }
+//     }
+//   };
   
   return (
     <FormContainer>
@@ -79,24 +139,24 @@ const LoginForm = ({navigation}) => {
         </Text>
       ) : null}
       <FormInput
-        value={email}
-        onChangeText={value => handleOnChangeText(value, 'email')}
-        label='Email'
-        placeholder='Enter a email'
+        value={phone}
+        onChangeText={value => setPhone(value, 'phone')}
+        label='Phone'
+        placeholder='Enter a Phone'
         autoCapitalize='none'
       />
       <FormInput
         value={password}
-        onChangeText={value => handleOnChangeText(value, 'password')}
+        onChangeText={value => setPassword(value, 'password')}
         label='Password'
-        placeholder='********'
+        placeholder='******'
         autoCapitalize='none'
         secureTextEntry
       />
       <TouchableOpacity style={styles.button}onPress={() => navigation.navigate('ForgetPassword')}>
             <Text  style={{ color:'blue'}}>ForgetPassword?</Text>
           </TouchableOpacity>
-      <FormSubmitButton onPress={ () => {submitForm(email, password)
+      <FormSubmitButton onPress={ () => {handleLogin(phone, password)
       
       }} title='Login' />
       <View style={{flexDirection: 'row', marginTop: 20}}>
@@ -121,4 +181,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginForm ;
+export default LoginScreen ;

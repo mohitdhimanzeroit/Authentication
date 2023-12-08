@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Button,  Alert} from 'react-native';
 import {
   createDrawerNavigator,
@@ -23,9 +23,42 @@ const CustomDrawer = props => {
 
   const { setIsLoggedIn } = useLogin();
   const [profile, setSelectedImage] = useState(null)
+  const [profileData, setProfileData] = useState(null);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const token = await AsyncStorage.getItem('key');
+      console.log(token, "zzzzzz11111111")
+      const response = await axios.post('http://16.171.194.117/private/user-get-profile', {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      console.log('Response Status:', response.status);
+      
+      if (!response.ok) {
+console.log(response,"jjjjjjjjjjjjjjj")
+        return;
+      }
+      
+      const data = await response.json();
+      console.log('Response Data:', data);
+      
+      setProfileData(data);
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
 
-  const openImagePicker = () => {
+  const openImagePicker = async () => {
     const options = {
       mediaType: 'photo',
       includeBase64: false,
@@ -40,21 +73,25 @@ const CustomDrawer = props => {
         console.log('Image picker error: ', response.error);
       } else {
         let imageUri = response.uri || response.assets?.[0]?.uri;
+        
         setSelectedImage(imageUri);
+        console.log(imageUri,"mmmmmmmmmmmmmmmmmmm")
       }
+      console.log(response,"kklkkkkk")
      
       uploadImage(response)
-      console.log(response,"kklkkkkk")
+      
     });
   };
-  const uploadImage = async image => {
+  const uploadImage = async response => {
     try {
       const formData = new FormData();
-      formData.append('image', {
-        uri: profile,
-        type: 'image/jpeg',
-        name: 'fileName',
-      });          
+      formData.append('file', {
+        uri: response.assets[0].uri, 
+        type: response.assets[0].type,
+        name: response.assets[0].fileName,
+      });      
+      console.log(formData,"llllllljjjjjjjjjjjjjjjjj")    
       const token = await AsyncStorage.getItem('key');
       console.log(token, "zzzzzz")
       // Make an API request to upload the image using the authorization token
@@ -73,6 +110,7 @@ const CustomDrawer = props => {
     }
   };
   return (
+    
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
         <View style={styles.profileContainer}>
