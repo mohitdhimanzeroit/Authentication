@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Button,  Alert} from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet, Button, Alert } from 'react-native';
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -12,8 +12,9 @@ import { useLogin } from './context/LoginProvider';
 import Colors from '../constants/Colors'
 import imgPlaceHolder from '../assets/user_boy.png'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
-import { launchImageLibrary} from 'react-native-image-picker';
+import { launchImageLibrary } from 'react-native-image-picker';
 import axios from 'axios';
+import SyncStorage from "sync-storage";
 const Drawer = createDrawerNavigator();
 
 const CustomDrawer = props => {
@@ -24,32 +25,37 @@ const CustomDrawer = props => {
   const { setIsLoggedIn } = useLogin();
   const [profile, setSelectedImage] = useState(null)
   const [profileData, setProfileData] = useState(null);
+  // const [profileData1, setProfileData1] = useState(null);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const token = await AsyncStorage.getItem('key');
-      console.log(token, "zzzzzz11111111")
-      const response = await axios.post('http://16.171.194.117/private/user-get-profile', {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      
-      console.log('Response Status:', response.status);
-      
-      if (!response.ok) {
-console.log(response,"jjjjjjjjjjjjjjj")
-        return;
-      }
-      
-      const data = await response.json();
-      console.log('Response Data:', data);
-      
-      setProfileData(data);
-      } catch (error) {
+        console.log(token, "z1111111oohltmmmnln")
+        const response = await fetch('http://16.171.194.117/private/user-get-profile', {
+          method: 'POST',
+          headers: {
+
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log('Response Status:', response.status);
+
+        if (!response.ok) {
+          console.log(response, "jjjjjjjjjjjjjjj")
+          return;
+        }
+
+        const data = await response.json();
+        
+        console.log(data["payload"][0]["user_img_array"][0]['usd_user_image_one'], "hhhhhhhhhhhhhhhhh");
+
+
+  
+setProfileData(data["payload"][0]["user_img_array"][0]['usd_user_image_one']);
+console.log(setProfileData,"oooooooooooo")    
+} catch (error) {
         console.error('Error fetching user profile:', error);
       }
     };
@@ -73,25 +79,25 @@ console.log(response,"jjjjjjjjjjjjjjj")
         console.log('Image picker error: ', response.error);
       } else {
         let imageUri = response.uri || response.assets?.[0]?.uri;
-        
+
         setSelectedImage(imageUri);
-        console.log(imageUri,"mmmmmmmmmmmmmmmmmmm")
+        console.log(imageUri, "mmmmmmmmmmmmmmmmmmm")
       }
-      console.log(response,"kklkkkkk")
-     
+      console.log(response, "kklkkkkk")
+
       uploadImage(response)
-      
+
     });
   };
   const uploadImage = async response => {
     try {
       const formData = new FormData();
       formData.append('file', {
-        uri: response.assets[0].uri, 
+        uri: response.assets[0].uri,
         type: response.assets[0].type,
         name: response.assets[0].fileName,
-      });      
-      console.log(formData,"llllllljjjjjjjjjjjjjjjjj")    
+      });
+      console.log(formData, "llllllljjjjjjjjjjjjjjjjj")
       const token = await AsyncStorage.getItem('key');
       console.log(token, "zzzzzz")
       // Make an API request to upload the image using the authorization token
@@ -110,7 +116,7 @@ console.log(response,"jjjjjjjjjjjjjjj")
     }
   };
   return (
-    
+
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
         <View style={styles.profileContainer}>
@@ -121,8 +127,8 @@ console.log(response,"jjjjjjjjjjjjjjj")
               <FontAwesome name="pencil" size={20} color={Colors.green} />
 
             </TouchableOpacity>
-          
-          
+
+
           </View>
         </View>
         <DrawerItemList {...props} />
